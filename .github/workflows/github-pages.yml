@@ -16,6 +16,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        
+      - uses: actions/setup-node@v3
+        with:
+            node-version: 14
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
@@ -29,4 +33,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./.vuepress/dist
-          cname: pterodactyl.io
+          cname: pterodactyl-taiwan.github.io

@@ -1,121 +1,109 @@
-# Creating SSL Certificates
+# 建立 SSL 證書
 
-This tutorial briefly covers creating new SSL certificates for your panel and wings.
+本頁將為您介紹如何為面板和 Wings 建立新的 SSL 證書
 
 :::: tabs
-::: tab "Method 1: Certbot"
-To begin, we will install certbot, a simple script that automatically renews our certificates and allows much
-easier creation of them. The command below is for Ubuntu distributions, but you can always check [Certbot's official
-site](https://certbot.eff.org/) for installation instructions. We have also included a command below to install certbot's
-Nginx/Apache plugin so you won't have to stop your webserver.
+::: tab "方法1: Certbot"
+首先,我們將安裝 Certbot,這是一個指令碼檔案,它可以自動更新證書並一鍵建立證書。下面的命令只適合 Ubuntu，但您可以在 [Certbot 官方網站](https://certbot.eff.org/)檢視相關安裝說明,我們這裡包含了安裝 Certbot 必要的Nginx或Apache外掛的指令,這樣媽媽再也不用擔心我需要遷移環境了!
 
 ``` bash
 sudo apt update
 sudo apt install -y certbot
-# Run this if you use Nginx
+# Nginx 外掛
 sudo apt install -y python3-certbot-nginx
-# Run this if you use Apache
+# Apache 外掛
 sudo apt install -y python3-certbot-apache
 ```
 
-## Creating a Certificate
+## 建立證書
 
-After installing the certbot, we need to generate a certificate. There are a couple of ways to do that, but the easiest
-is to use the web server-specific certbot plugin you just installed. For Wings-only machines that don't need a web server, use the standalone or DNS method of the certbot as you don't need a web server for it.
+安裝Certbot之後我們需要生成一個證書,最簡單的方法就是安裝Web伺服器的Certbot外掛,如果沒有Web伺服器的話就需要DNS驗證了
 
-Then, in the command below, you should replace `example.com` with the domain you would like to generate a certificate
-for.  When you have multiple domains you would like certificates for, simply add more `-d anotherdomain.com` flags to the
-command. You can also look into generating a wildcard certificate but that is not covered in this tutorial.
+在下面命令中,請您替換 `example.com` 域名為您自己需要生成證書的域名,當您需要申請多個域名的證書時可以在每個域名前面新增 `-d` 引數 ，列如 `-d anotherdomain.com`，當然您還可以考慮生成萬用字元證書，但本教程未涉及。
 
-When you are using certbot's Nginx/Apache plugin, you won't need to restart your webserver to have the certificate
-applied assuming that you've already configured the webservers to use SSL as instructed in the [web server configuration step](https://pterodactyl.io/panel/1.0/webserver_configuration.html).
+### HTTP 驗證
 
-### HTTP challenge
-
-HTTP challenge requires you to expose port 80 for the challenge verification.
+HTTP 驗證需要您開放伺服器 80 埠來進行驗證
 
 ``` bash
 # Nginx
 certbot certonly --nginx -d example.com
 # Apache
 certbot certonly --apache -d example.com
-# Standalone - Use this if neither works. Make sure to stop your webserver first when using this method.
+# 如果以上兩者都不起作用您可以試試這個,但是用之前請確保Web伺服器已經關閉
 certbot certonly --standalone -d example.com
 ```
 
-### DNS challenge
+### DNS 驗證
 
-DNS challenge requires you to create a new TXT DNS record to verify domain ownership, instead of having to expose port 80. The instructions are displayed when you run the certbot command below.
+DNS 驗證要求您去您的域名購買商那裡解析相應的TXT DNS記錄值以驗證域名所有權，而不必公開 80 埠。在執行下面的 certbot 命令時會顯示說明。
 
 ```bash
 certbot -d example.com --manual --preferred-challenges dns certonly
 ```
 
-### Auto Renewal
+### 自動續簽
 
-You'll also probably want to configure the automatic renewal of certificates to prevent unexpected certificate expirations.
-You can open crontab with `sudo crontab -e` and add the line from below to the bottom of it for attempting renewal every day at 23 (11 PM).
+您可以配置證書自動續簽以防止證書過期,您可以使用 `sudo crontab -e` 開啟 crontab 來新增下面的程式碼,該程式碼將在每天 23點 (晚上11點)都會檢查一遍SSL證書是否過期並嘗試續簽
 
-Deploy hook would restart the Nginx service to apply a new certificate when it's renewed successfully. Change `nginx` in the restart command to suit your own needs, such as to `apache` or `wings`.
+部署成功後將會自動重啟 Nginx 並應用新的 SSL 證書,您可以將 `systemctl restart nginx` 中的 `nginx` 更改為 `apache` 或 `wings`
 
-For advanced users, we suggest installing and using [acme.sh](https://acme.sh)
-which provides more options, and is much more powerful than certbot.
+對更高階的使用者來說,我們建議使用 [acme.sh](https://acme.sh) ，它提供了更多更強大的功能
 
 ``` text
 0 23 * * * certbot renew --quiet --deploy-hook "systemctl restart nginx"
 ```
 
-### Troubleshooting
+### 疑難解答
 
-If you get an `Insecure Connection` or SSL/TLS related error when trying to access your panel or wings, the certificate has likely expired.
-This can be easily fixed by renewing the SSL certificate, although using the command `certbot renew` might not do the job if port 80 is in use, as it'll return errors like: `Error: Attempting to renew cert (domain) from /etc/letsencrypt/renew/domain.conf produced an unexpected error`.
+如果您在嘗試訪問面板或 Wings 時遇到 `不安全連線` 或 SSL/TLS 相關的錯誤時,有可能是您的 SSL 證書過期了,您可以透過更新 SSL 證書來解決,如果您的 80 埠正在被佔用那就無法使用 `certbot-renew` 來完成自動續簽
 
-This will happen especially if you're running Nginx instead of Apache. The solution for this is to use Nginx or Apache plugins with `--nginx` and `--apache`. Alternatively, you can stop Nginx, then renew the certificate, finally restart Nginx. Replace `nginx` with your own web server or with `wings` should you be renewing the certificate for Wings.
+如果您執行的是 Nginx,在執行 Certbot 並附帶有 `-nginx` 時出現報錯您可以先停止 Nginx 服務後來續簽證書，然後再啟動 Nginx,如果您在為 Wings 續簽證書，那你可以替換為 `wings`
 
-Stop Nginx:
+停止 Nginx:
 
 ```bash
 systemctl stop nginx
 ```
 
-Renew the certificate:
+續簽證書:
 
 ```bash
 certbot renew
 ```
 
-Once the process has complete, you can restart the Nginx service:
+在完成續簽後請使用下面的命令來重啟 Nginx:
 
 ```bash
 systemctl start nginx
 ```
-You may also need to restart Wings as not every service is able to automatically apply an updated certificate:
+您可能還需要重新啟動 Wings，因為並非每個服務都能夠自動應用更新的證書：
 
 ```bash
 systemctl restart wings
 ```
 
 :::
-::: tab "Method 2: acme.sh (using Cloudflare API)"
-This is for advanced users, whose server systems do not have access to port 80. The command below is for Ubuntu distributions and CloudFlare API (you may google for other APIs for other DNS providers), but you can always check [acme.sh's official site](https://github.com/Neilpang/acme.sh) for installation instructions.
+::: tab "方法2: acme.sh (使用 Cloudflare API)"
+該方法適合高階使用者和無法開放80埠的使用者, 下面的命令適用於 Ubuntu 和 Cloudflare API,您可以檢視 [acme.sh 的官方網站](https://github.com/Neilpang/acme.sh) 來獲取相關說明
 
 ``` bash
 curl https://get.acme.sh | sh
 ```
 
-### Obtaining CloudFlare API Key
+### 獲取 Cloudflare API 金鑰
 
-After installing acme.sh, we need to fetch a CloudFlare API key. Please make sure that a DNS record (A or CNAME record) is pointing to your target node, and set the cloud to grey (bypassing CloudFlare proxy). Then go to My Profile > API keys and on Global API Key subtab, click on "view", enter your CloudFlare password, and copy the API key to clipboard.
+在安裝 acme 後我們需要獲取 Cloudflare 的 API 金鑰,請確保您的 DNS 記錄指向您的節點(Cloudflare 的控制檯中雲朵應該是灰色的),然後找到 API 金鑰,在全域性 API 金鑰的選項中點選檢視您的 Cloudflare 金鑰
 
-### Creating a Certificate
+### 申請證書
 
-Since the configuration file is based on Certbot, we need to create the folder manually.
+由於配置檔案基於 Certbot,所以我們需要手動建立一個資料夾
 
 ```bash
 sudo mkdir /etc/letsencrypt/live/example.com
 ```
 
-After installing acme.sh and obtaining CloudFlare API key, we need to then generate a certificate. First input the CloudFlare API credentials.
+安裝 acme 之後執行它並獲取 Cloudflare 的 API 金鑰,然後輸入 Cloudflare 的 API 憑據來生成證書
 
 ```bash
 export CF_Key="Your_CloudFlare_API_Key"
@@ -123,7 +111,7 @@ export CF_Email="Your_CloudFlare_Account@example.com"
 
 ```
 
-Then create the certificate.
+然後建立證書
 
 ```bash
 acme.sh --issue --dns dns_cf -d "example.com" --server letsencrypt \
@@ -131,9 +119,9 @@ acme.sh --issue --dns dns_cf -d "example.com" --server letsencrypt \
 --fullchain-file /etc/letsencrypt/live/example.com/fullchain.pem
 ```
 
-### Auto Renewal
+### 自動續簽
 
-After running the script for the first time, it will be added to the crontab automatically. You may edit the auto renewal interval by editing the crontab.
+第一次執行指令碼後,它將自動新增到 crontab,您可以使用以下命令來編輯自動續訂間隔
 
 ```bash
 sudo crontab -e

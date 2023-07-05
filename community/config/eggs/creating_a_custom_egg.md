@@ -1,17 +1,13 @@
-# Creating a Custom Egg
+# 建立自定義預設
 ::: warning
-You should not edit existing services or options that ship with the Panel. Each upgrade we push can make minor
-changes to these, and you'll lose any changes you've made.
+您不應編輯面板隨附的現有預設。我們每次對這些預設的更新，在你更新資料庫時會覆蓋面板的原有預設，也就是說你將丟失這些所有改動的內容。
 :::
 
 [[toc]]
 
-The first thing you'll need to do is create a new service. In this case, the name and description speak for themselves
-in this case. The `Folder Name` _must be a unique name_ not being used by any other service, and should only
-contain letters, numbers, underscores, and dashes. This is the name of the folder where the daemon will be storing
-the service options on the daemon.
+您需要做的第一件事是建立一個新的預設組(類似資料夾)。名稱和描述就不言而喻了。`預設組名稱` _需要確保唯一性_ ，不被其他任何預設組使用，並且只能包含字母、數字、下劃線和破折號(中文也是可以的)。這是守護程序儲存預設的預設組名稱。
 
-The default start command is also required, however it can be changed per-option.
+預設的預設啟動命令也是必需的，但是可以根據變數進行動態更改。
 
 ## Create New Option
 After creating the service, in the bottom right of the page you should see a button titled `New Egg`, press it.
@@ -70,7 +66,7 @@ block prior to booting the server to ensure all of the required settings are def
 ```
 
 In this example, we are telling the Daemon to read `server.properties` in `/home/container`. Within this block, we
-define a `parser`, in this case `properties` but the following are [valid parsers](https://github.com/pterodactyl/wings/blob/develop/parser/parser.go#L25-L30):
+define a `parser`, in this case `properties` but the following are [valid parsers](https://github.com/pterodactyl-taiwan/wings/blob/develop/parser/parser.go#L25-L30):
 
 * `file` — This parser goes based on matching the beginning of lines, and not a specific property like the other five.
 Avoid using this parser if possible.

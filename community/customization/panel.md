@@ -1,19 +1,19 @@
-# Building Panel Assets
+# 構建面板資源
 
 :::warning
-Do **not** run the following steps on your production nodes.
+**請勿在您的生產**節點上執行以下步驟。
 :::
 
-Instructions on how to build the panel are also available in the [BUILDING.md](https://github.com/pterodactyl/panel/blob/develop/BUILDING.md) file.
+在 [BUILDING.md](https://github.com/pterodactyl-taiwan/panel/blob/develop/BUILDING.md) 檔案中也提供了有關如何構建面板的說明。
 
-The frontend of the Panel is built with React. Any changes to the source files require to recompile it.
-This also applies to style sheets. The following sections explain how to do so.
+面板的前端是用 React 構建的。對原始檔所做的任何更改都需要重新編譯。
+這也適用於樣式表。以下部分解釋瞭如何執行此操作。
 
-## Install Dependencies
+## 安裝依賴項
 
-The following commands will install the necessary dependencies for building the Panel assets.
+以下命令將安裝必要的依賴項以構建面板資源。
 
-The build tools require NodeJS, yarn is used as the package manager.
+構建工具需要 NodeJS，使用 yarn 作為包管理器。
 
 ```bash
 # Ubuntu/Debian
@@ -26,23 +26,23 @@ sudo yum install -y nodejs yarn # CentOS 7
 sudo dnf install -y nodejs yarn # CentOS 8
 ```
 
-Install required javascript packages.
+安裝所需的 JavaScript 軟體包。
 
 ```bash
-npm i -g yarn # Install Yarn
+npm i -g yarn # 安裝 Yarn
 
 cd /var/www/pterodactyl
-yarn # Installs panel build dependencies
+yarn # 安裝面板構建依賴項
 ```
 
-## Build Panel Assets
+## 構建面板資源
 
-The following command will rebuild the Panel frontend. For NodeJS version 17 and above, you must enable the `--openssl-legacy-provider` option before building.
+以下命令將重建面板前端。 對於 NodeJS 版本 17 及更高版本，您必須在構建之前啟用 `--openssl-legacy-provider` 選項。
 
 ```bash
 cd /var/www/pterodactyl
-export NODE_OPTIONS=--openssl-legacy-provider # for NodeJS v17+
-yarn build:production # Build panel
+export NODE_OPTIONS=--openssl-legacy-provider # 對於 NodeJS v17+
+yarn build:production # 構建面板
 ```
 
-You can use command `yarn run watch` to view the progress of your changes in almost real-time for easier development. Once you're satisfied with your changes build the panel using the previously mentioned `yarn build:production` command. 
+您可以使用 `yarn run watch` 命令，可以幾乎實時地檢視更改進度，以便於開發。一旦您對此更改感到滿意，可以使用前面提到的 `yarn build:production` 命令構建面板。

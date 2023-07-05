@@ -1,149 +1,144 @@
-# Installing Wings
+# 安裝 Wings
 
-Wings is the next generation server control plane from Pterodactyl. It has been rebuilt from the
-ground up using Go and lessons learned from our first Nodejs Daemon.
+Wings 是翼龍的下一代伺服器控制平面。它已經使用 Go 從頭開始重建，並從我們的第一個 Nodejs 守護程序中吸取了教訓。
 
 ::: warning
-You should only install Wings if you are running **Pterodactyl 1.x**. Do not install this software
-for previous versions of Pterodactyl.
+只有在執行 **翼龍 1.x** 時才應安裝 Wings。不要為以前版本的翼龍安裝此軟體。
 :::
 
-## Supported Systems
+## 支援的系統
 
-The following is a list of supported operating systems. Please be aware that this is not an exhaustive list,
-there is a high probability that you can run the software on other Linux distributions without much effort.
-You are responsible for determining which packages may be necessary on those systems. There is also a very
-high probability that new releases of the supported OSes below will work just fine, you are not restricted to
-only the versions listed below.
+以下是支援的作業系統列表。請注意，這不是一個詳盡的列表，您很有可能可以毫不費力地在其他 Linux 發行版上執行該軟體。您有責任確定這些系統上可能需要哪些軟體包。以下受支援作業系統的新版本也很有可能正常工作，您在安裝是不僅限於以下列出的版本。
 
-| Operating System | Version |     Supported      | Notes                                                       |
+| 作業系統 | 版本 |     支援狀況       | 注意事項                                                       |
 |------------------|---------|:------------------:|-------------------------------------------------------------|
-| **Ubuntu**       | 18.04   | :white_check_mark: | Documentation written assuming Ubuntu 18.04 as the base OS. |
+| **Ubuntu**       | 18.04   | :white_check_mark: | 文件基於 Ubuntu 18.04 作為作業系統所編寫的。 |
 |                  | 20.04   | :white_check_mark: |                                                             |
 |                  | 22.04   | :white_check_mark: |                                                             |
 | **CentOS**       | 7       | :white_check_mark: |                                                             |
-|                  | 8       | :white_check_mark: | Note that CentOS 8 is EOL. Use Rocky or Alma Linux.         |
+|                  | 8       | :white_check_mark: | 請注意，CentOS 8 已停運。使用 Rocky 或 Alma Linux.         |
 | **Debian**       | 10      | :white_check_mark: |                                                             |
 |                  | 11      | :white_check_mark: |                                                             |
-| **Windows**      | All     |        :x:         | This software will not run in Windows environments.         |
+| **Windows**      | All     |        :x:         | 該軟體將無法在 Windows 環境中執行。         |
 
-## System Requirements
+## 系統要求
 
-To run Wings, you will need a Linux system capable of running Docker containers. Most VPS and almost all
-dedicated servers should be capable of running Docker, but there are edge cases.
+要執行 Wings，您需要一個能夠執行 Docker 映象的 Linux 系統。大多數 VPS 和幾乎所有專用伺服器都應該能夠執行 Docker，但也有一些極端情況。
 
-When your provider uses `Virtuozzo`, `OpenVZ` (or `OVZ`), or `LXC` virtualization, you will most likely be unable to
-run Wings. Some providers have made the necessary changes for nested virtualization to support Docker. Ask your provider's support team to make sure. KVM is guaranteed to work.
+當您的供應商使用 `Virtuozzo`、`OpenVZ`（或 `OVZ`）或 `LXC` 虛擬化時，您很可能無法執行 Wings。一些提供商已經對巢狀虛擬化進行了必要的更改以支援 Docker。請諮詢您的提供商的支援團隊。KVM 保證可以工作。
 
-The easiest way to check is to type `systemd-detect-virt`.
-If the result doesn't contain `OpenVZ` or`LXC`, it should be fine. The result of `none` will appear when running dedicated hardware without any virtualization.
+最簡單的檢查方法是輸入 `systemd-detect-virt`。
+如果結果不包含 `OpenVZ` 或 `LXC`，應該沒問題。當執行沒有任何虛擬化的專用硬體時，將出現 `none` 的結果。
 
-Should that not work for some reason, or you're still unsure, you can also run the command below.
+如果由於某種原因不能正常工作，或者您仍然不確定，您也可以執行以下命令。
 
 ```bash
 dane@pterodactyl:~$ sudo dmidecode -s system-manufacturer
 VMware, Inc.
 ```
 
-## Dependencies
+## 依賴項
 
 - curl
 - Docker
 
-### Installing Docker
+### 安裝 Docker
 
-For a quick install of Docker CE, you can execute the command below:
+如需快速安裝 Docker 社群版，您可以執行以下命令：
 
 ```bash
 curl -sSL https://get.docker.com/ | CHANNEL=stable bash
+# 如果速度過慢可以嘗試阿里雲源
+curl -sSL https://get.docker.com/ | CHANNEL=stable bash -s docker --mirror Aliyun
 ```
 
-If you would rather do a manual installation, please reference the official Docker documentation for how to install Docker CE on your server. Some quick links
-are listed below for commonly supported systems.
+如果您希望手動安裝，請參考官方 Docker 文件瞭解如何在您的伺服器上安裝 Docker 社群版。下面列出了一些常用系統支援的快速連結。
 
 - [Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-docker-ce)
 - [CentOS](https://docs.docker.com/install/linux/docker-ce/centos/#install-docker-ce)
 - [Debian](https://docs.docker.com/install/linux/docker-ce/debian/#install-docker-ce)
 
-::: warning Check your Kernel
-Please be aware that some hosts install a modified kernel that does not support important docker features. Please
-check your kernel by running `uname -r`. If your kernel ends in `-xxxx-grs-ipv6-64` or `-xxxx-mod-std-ipv6-64` you're
-probably using a non-supported kernel. Check our [Kernel Modifications](../../../daemon/0.6/kernel_modifications.md) guide for details.
+::: warning 檢查你的核心
+請注意，某些主機安裝了不支援 docker 重要功能的修改核心。 請透過執行 `uname -r` 檢查您的核心。 如果您的核心以 `-xxxx-grs-ipv6-64` 或 `-xxxx-mod-std-ipv6-64` 結尾，您可能使用的是不受支援的核心。 檢視我們的 [核心修改](../../../daemon/0.6/kernel_modifications.md) 指南瞭解詳細資訊。
 :::
 
-#### Start Docker on Boot
+#### 在啟動時啟動 Docker
 
-If you are on an operating system with systemd (Ubuntu 16+, Debian 8+, CentOS 7+) run the command below to have Docker start when you boot your machine.
+如果您使用的是帶有 systemd 的作業系統（Ubuntu 16+、Debian 8+、CentOS 7+），請執行以下命令以在您啟動機器時啟動 Docker。
 
 ```bash
 systemctl enable --now docker
 ```
 
-#### Enabling Swap
+#### 啟用虛擬記憶體
 
-On most systems, Docker will be unable to setup swap space by default. You can confirm this by running `docker info` and looking for the output of `WARNING: No swap limit support` near the bottom.
+在大多數系統上，預設情況下 Docker 將無法設定交換空間。您可以透過執行 `docker info` 並在底部附近查詢 `WARNING: No swap limit support` 的輸出來確認這一點。
 
-Enabling swap is entirely optional, but we recommended doing it if you will be hosting for others and to prevent OOM errors.
+啟用虛擬記憶體是完全可選的，但如果您要為他人託管並防止出現 OOM 錯誤，我們建議您這樣做。
 
-To enable swap, open `/etc/default/grub` as a root user and find the line starting with `GRUB_CMDLINE_LINUX_DEFAULT`. Make
-sure the line includes `swapaccount=1` somewhere inside the double-quotes.
+要啟用虛擬記憶體，請以 root 使用者身份開啟 `/etc/default/grub` 並找到以 `GRUB_CMDLINE_LINUX_DEFAULT` 為開頭的一行。確保該行在雙引號內的某處包含 `swapaccount=1`。
 
-After that, run `sudo update-grub` followed by `sudo reboot` to restart the server and have swap enabled.
-Below is an example of what the line should look like, _do not copy this line verbatim. It often has additional OS-specific parameters._
+之後，執行 `sudo update-grub` 然後執行 `sudo reboot` 重啟伺服器並啟用虛擬記憶體。
+下面是該行內容示例，_請勿逐字複製此行。 它通常具有其他特定於作業系統的引數。_
 
 ```text
 GRUB_CMDLINE_LINUX_DEFAULT="swapaccount=1"
 ```
 
-::: tip GRUB Configuration
-Some Linux distros may ignore `GRUB_CMDLINE_LINUX_DEFAULT`. Therefore you might have to use `GRUB_CMDLINE_LINUX` instead should the default one not work for you.
+::: tip GRUB 配置
+一些 Linux 發行版可能會忽略 `GRUB_CMDLINE_LINUX_DEFAULT`。因此，如果預設的不適合您，您可能不得不使用 `GRUB_CMDLINE_LINUX`。
 :::
 
-## Installing Wings
+## 安裝 Wings
 
-The first step for installing Wings is to ensure we have the required directory structure setup. To do so,
-run the commands below, which will create the base directory and download the wings executable.
+安裝 Wings 的第一步是確保我們已經設定了所需的目錄結構。為此，請執行以下命令，這將建立基本目錄並下載 wings 可執行檔案。
+
+::: danger
+Wings 及配置檔案路徑已寫死，請不要想著更改路徑。（當然，你可以修改配置中的儲存路徑）     
+並且 wings 檔案和配置檔案佔用空間很低，在配置完設定後自行備份配置檔案以防不測(如果真沒了，那也是整個伺服器沒了吧...)。
+:::
 
 ```bash
 mkdir -p /etc/pterodactyl
-curl -L -o /usr/local/bin/wings "https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_$([[ "$(uname -m)" == "x86_64" ]] && echo "amd64" || echo "arm64")"
+curl -L -o /usr/local/bin/wings "https://github.com/pterodactyl-taiwan/wings/releases/latest/download/wings_linux_$([[ "$(uname -m)" == "x86_64" ]] && echo "amd64" || echo "arm64")"
 chmod u+x /usr/local/bin/wings
+
+# 若閣下在上條指令上無法正常拉取壓縮包或者拉取緩慢 可使用 gh-proxy 提供的CF反向代理來拉取
+curl -L -o /usr/local/bin/wings "https://ghproxy.com/https://github.com/pterodactyl-taiwan/wings/releases/latest/download/wings_linux_$([[ "$(uname -m)" == "x86_64" ]] && echo "amd64" || echo "arm64")"
 ```
 
-::: warning OVH/SYS Servers
-If you are using a server provided by OVH or SoYouStart please be aware that your main drive space is probably allocated to
-`/home`, and not `/` by default. Please consider using `/home/daemon-data` for server data. This can be easily
-set when creating the node.
+::: warning OVH/SYS 伺服器
+如果您使用的是 OVH 或 SoYouStart 提供的伺服器，請注意您的主驅動器空間可能分配給 `/home`，而不是預設分配給 `/`。
+請考慮使用 `/home/daemon-data` 來儲存伺服器資料。在建立節點時可以很容易地設定。
 :::
 
-## Configure
+## 配置
 
-Once you have installed Wings and the required components, the next step is to create a node on your installed Panel. Go to your Panel administrative view, select Nodes from the sidebar, and on the right side click Create New button.
+安裝 Wings 和所需元件後，下一步是在已安裝的面板上建立一個節點。轉到您的面板管理視窗，從側邊欄中選擇節點，然後在右側單擊建立新按鈕。
 
-After you have created a node, click on it and there will be a tab called Configuration. Copy the code block content, paste it into a new file called `config.yml` in `/etc/pterodactyl` and save it.
+建立節點後，單擊它，將出現一個名為“配置”的選項卡。複製程式碼塊內容，將其貼上到 `/etc/pterodactyl` 中的一個名為 `config.yml` 的新檔案中並儲存。
 
-Alternatively, you can click on the Generate Token button, copy the bash command and paste it into your terminal.
+或者，您可以單擊 “生成自動部署指令” 按鈕，複製 bash 命令並將其貼上到終端中。
 
-![example image of wings configuration](./../../.vuepress/public/wings_configuration_example.png)
+![Wings 配置示例圖片](./../../.vuepress/public/wings_configuration_example.png)
 
 ::: warning
-When your Panel is using SSL, the Wings must also have one created for its FQDN. See [Creating SSL Certificates](/tutorials/creating_ssl_certificates.html) documentation page for how to create these certificates before continuing.
+當您的面板使用 SSL 時，Wings 節點就必須使用域名解析，併為其域名也建立一個 SSL。在繼續之前，請參閱 [建立 SSL 證書](/tutorials/creating_ssl_certificates.html) 文件頁面瞭解如何建立這些證書。
 :::
 
-### Starting Wings
+### 啟動 Wings
 
-To start Wings, simply run the command below, which will start it in a debug mode. Once you confirmed that it is running without errors, use `CTRL+C` to terminate the process and daemonize it by following the instructions below. Depending on your server's internet connection pulling and starting Wings for the first time may take a few minutes.
+要啟動 Wings，只需執行以下命令，它將以除錯模式啟動。一旦你確認它執行沒有錯誤，使用 `CTRL+C` 來終止程序並按照下面的說明使用守護程序。根據您伺服器的網際網路連線，第一次拉取和啟動 Wings 可能需要幾分鐘時間。
 
 ```bash
 sudo wings --debug
 ```
 
-You may optionally add the `--debug` flag to run Wings in debug mode.
+您可以選擇新增 `--debug` 引數以在除錯模式下執行 Wings。
 
-### Daemonizing (using systemd)
+### 守護程序（使用 systemd）
 
-Running Wings in the background is a simple task, just make sure that it runs without errors before doing
-this. Place the contents below in a file called `wings.service` in the `/etc/systemd/system` directory.
+在後臺執行 Wings 是一項簡單的任務，只需在執行此操作之前確保它執行無誤即可。將下面的內容放在 `/etc/systemd/system` 目錄下的 `wings.service` 檔案中。
 
 ```text
 [Unit]
@@ -167,16 +162,16 @@ RestartSec=5s
 WantedBy=multi-user.target
 ```
 
-Then, run the commands below to reload systemd and start Wings.
+然後，執行以下命令重新載入 systemd 並啟動 Wings。
 
 ```bash
 systemctl enable --now wings
 ```
 
-### Node Allocations
+### 節點分配
 
-Allocation is a combination of IP and Port that you can assign to a server. Each created server must have at least one allocation. The allocation would be the IP address of your network interface. In some cases, such as when behind NAT, it would be the internal IP. To create new allocations go to Nodes > your node > Allocation.
+分配是 IP 和埠的組合，您可以分配給伺服器。 每個建立的伺服器必須至少有一個分配。 分配將是您的網路介面的 IP 地址。 在某些情況下，例如在使用了 NAT 的情況下，它將是內部 IP。 要建立新分配，請轉到節點 > 您的節點 > 分配。
 
-![example image of node allocations](../../.vuepress/public/node_allocations.png)
+![節點分配示例圖](../../.vuepress/public/node_allocations.png)
 
-Type `hostname -I | awk '{print $1}'` to find the IP to be used for the allocation. Alternatively, you can type `ip addr | grep "inet "` to see all your available interfaces and IP addresses. Do not use 127.0.0.1 for allocations.
+輸入 `hostname -I | awk '{print $1}'` 查詢要用於分配的 IP。或者，您可以輸入 `ip addr | grep "inet "` 檢視所有可用的介面和 IP 地址。不要使用 127.0.0.1 進行分配。

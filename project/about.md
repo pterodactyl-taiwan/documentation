@@ -1,32 +1,58 @@
-# About
-
+# 關於
 [[toc]]
 
-## Core Project Team
+## 翼龍(臺灣)
 
-| Name                                          | Discord Name         | Primary Role                        |
-|-----------------------------------------------|----------------------|-------------------------------------|
-| [Dane Everitt](https://daneeveritt.com/)      | `Tactical Fish#8008` | Founder & Former Project Maintainer |
-| [Matthew Penner](https://matthewp.io/)        | `matthewp#0001`      | Project Maintainer                  |
-| Stepan Fedotov                                | `Trixter#0001`       | WHMCS Module Maintainer             |
-| Michael Parker                                | `parkervcp#6789`     | Egg Developer, Docker Integration   |
-| [Jakob Schrettenbrunner](https://schrej.net/) | `schrej#1337`        | Developer                           |
-| [Lance Pioch](https://lancepioch.com/)        | `ShadowLancer#5209`  | Developer                           |
+“翼龍臺灣” 為 Vlssu進行維護的翼龍第三方臺灣化分支，非官方版本。翼龍官方官網：pterodactyl.io
 
-Members of the project team have a red username in our Discord server.
+“翼龍臺灣” 不隸屬於 Pterodactyl Software
 
-## Community Team
+### 專案核心團隊
+| 名字 | Discord 名稱 | 聯絡方式 | 負責內容 |
+| ---- | ------------ | ------ | ---- |
+| [颯爽師叔](https://vlssu.com/) | `vlssu#9657` | [vlssu@vlssu.com](mailto:vlssu@vlssu.com) | 臺灣化主要負責人，專案維護人員 |
+| [冰凌](https://ilwork.cn/) | `a1an#5788` | [iceling@ilwork.cn](mailto:iceling@ilwork.cn) | 臺灣化主要負責人 |
+| [Wapriaily](https://www.wapriaily.com/) | `Wapriaily#3923` | [kano@wapriaily.com](mailto:kano@wapriaily.com) | Egg 、Docker 開發維護協助人員 |
 
-Pterodactyl would not be as successful as it is today without the help of our fantastic community support team. These
-members can be found in our Discord server and are distinguished with a yellow username.
+翼龍(臺灣)專案團隊的成員用青綠色使用者名稱在翼龍(臺灣)官方的 KOOK 伺服器中顯示。
 
-## Sponsors
+### 社群團隊
+如果沒有我們出色的社群團隊幫助，翼龍面板臺灣化/拓展將不會如此迅速。這些成員可以在翼龍(臺灣)官方的 KOOK 伺服器中找到，並以黃色使用者名稱顯示。
 
-The following companies help to fund Pterodactyl's development. [Interested in becoming a sponsor?](https://github.com/sponsors/matthewpi)
+### 贊助商
+以下公司/個人幫助資助翼龍(臺灣)的發展。 [有興趣成為贊助商嗎？](https://afdian.net/@vlssu)
 
-| Company                                                   | About                                                                                                                                                                                                                           |
+| 公司/個人 | 關於 |
+| ------- | ----- |
+| [**颯爽師叔**](https://vlssu.cn) | VLssu我的世界公益服一個非常完善、好玩的並且有活躍的社群生態 |
+| [**酷牛網路**](https://www.kuniu.net) | 為您提供專業的遊戲伺服器 |
+| [**速特互聯**](https://www.suteidc.com) | 我的世界伺服器出租，支援一鍵安裝MOD外掛 |
+
+## 翼龍
+### 專案核心團隊
+| 名字 | Discord 名稱 | 負責內容 |
+| ---- | ------------ | ---- |
+| [Dane Everitt](https://daneeveritt.com/)      | `Tactical Fish#8008` | 創始人&前專案維護者 |
+| [Matthew Penner](https://matthewp.io/)        | `matthewp#0001`      | 專案維護者                  |
+| Stepan Fedotov                                | `Trixter#0001`       | WISP 和 WHMCS 模組維護人員      |
+| Michael Parker                                | `parkervcp#6789`     | Egg 開發人員，Docker 整合   |
+| [Jakob Schrettenbrunner](https://schrej.net/) | `schrej#1337`        | 開發人員                           |
+| [Lance Pioch](https://lancepioch.com/)        | `ShadowLancer#5209`  | 開發人員                           |
+
+翼龍專案團隊的成員用紅色使用者名稱在翼龍官方的 Discord 伺服器中顯示。
+
+### 社群團隊
+如果沒有我們出色的社群團隊幫助，翼龍就不會像今天這樣成功。 這些成員可以在翼龍官方的 Discord 伺服器中找到，並以黃色使用者名稱顯示。
+
+## 贊助商
+
+以下公司幫助資助翼龍的發展。 [有興趣成為贊助商嗎？](https://github.com/sponsors/DaneEveritt)
+
+| 公司                                                   | 關於                                                                                                                                                                                                                           |
 |-----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [**WISP**](https://wisp.gg)                               | Extra features.                                                                                                                                                                                                                 |
+| [**Fragnet**](https://fragnet.net)                        | Providing low latency, high-end game hosting solutions to gamers, game studios and eSports platforms.                                                                                                                           |
+| [**RocketNode**](https://rocketnode.com/)                 | Innovative game server hosting combined with a straightforward control panel, affordable prices, and Rocket-Fast support.                                                                                                       |
 | [**Aussie Server Hosts**](https://aussieserverhosts.com/) | No frills Australian Owned and operated High Performance Server hosting for some of the most demanding games serving Australia and New Zealand.                                                                                 |
 | [**BisectHosting**](https://www.bisecthosting.com/)       | BisectHosting provides Minecraft, Valheim and other server hosting services with the highest reliability and lightning fast support since 2012.                                                                                 |
 | [**MineStrator**](https://minestrator.com/)               | Looking for the most highend French hosting company for your minecraft server? More than 24,000 members on our discord trust us. Give us a try!                                                                                 |
@@ -34,21 +60,9 @@ The following companies help to fund Pterodactyl's development. [Interested in b
 | [**VibeGAMES**](https://vibegames.net/)                   | VibeGAMES is a game server provider that specializes in DDOS protection for the games we offer. We have multiple locations in the US, Brazil, France, Germany, Singapore, Australia and South Africa.                           |
 | [**Pterodactyl Market**](https://pterodactylmarket.com/)  | Pterodactyl Market is a one-and-stop shop for Pterodactyl. In our market, you can find Add-ons, Themes, Eggs, and more for Pterodactyl.                                                                                         |
 | [**UltraServers**](https://ultraservers.com/)             | Deploy premium games hosting with the click of a button. Manage and swap games with ease and let us take care of the rest. We currently support Minecraft, Rust, ARK, 7 Days to Die, Garys MOD, CS:GO, Satisfactory and others. |
-| [**Realms Hosting**](https://realmshosting.com/)          | Want to build your Gaming Empire? Use Realms Hosting today to kick start your game server hosting with outstanding DDOS Protection, 24/7 Support, Cheap Prices and a Custom Control Panel.                                      |                                                                                                                                                                                                                                |
 
 ## License
 
 Pterodactyl® Copyright © 2015 - 2022 Dane Everitt and contributors.
 
 Code released under the [MIT License](https://github.com/pterodactyl/panel/blob/develop/LICENSE.md).
-
-## Release Signing
-
-Previously, releases were signed by a GPG key.  All recent releases are now signed using an SSH signing key.
-
-This key is used to sign release tags and commits created by Matthew Penner.  This key was first used to sign
-`v1.10.2` for the Panel and `v1.7.1` for Wings and has been used ever since.
-
-```text
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKL873MsP1OFfffNC8n9WcVuOXOSW65/q26MIzib0K9k
-```

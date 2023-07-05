@@ -1,27 +1,26 @@
-# Additional Configuration
+# 額外配置
 
 [[toc]]
 
 ::: warning
-These are advanced configurations for Wings. You risk breaking Wings and making containers unusable if
-you misconfigure something. Proceed only if you know what each configuration value does.
+這些是給 Wings 的額外配置,請小心進行配置否則您將有機率損壞 Wings
 :::
 
-You must apply all changes to your Wings `config.yml` file located at `/etc/pterodactyl` and restart wings. Verify your config file using [Yaml Lint](http://www.yamllint.com/) should you receive errors related to YAML parsing.
+您需要將 `config.yml` 放入 `/etc/pterodactyl` 資料夾然後重啟Wings來應用更改設定,請確認您使用的格式是 Yaml ,您可以使用 [Yaml Lint](http://www.yamllint.com/) 這樣在執行出錯時,您就可以收到類似的錯誤
 
-## Private Registries
+## 提供身份驗證
 
-You can use these settings to authenticate against (private) docker registries when pulling images.
+在拉取 Docker 映象時,您可以使用這些設定來對私有 Docker 進行身份驗證
 
-### Available Keys
+### 可用金鑰
 
-| Setting Key | Default Value | Notes             |
+|   設定金鑰  |    預設值      |    備註           |
 | ----------- | :-----------: | ----------------- |
-| name        |     null      | Registry address  |
-| username    |     null      | Registry username |
-| password    |     null      | Registry password |
+| name        |     null      | 認證地址  |
+| username    |     null      | 認證使用者名稱 |
+| password    |     null      | 認證密碼 |
 
-### Example of usage
+### 使用示例
 
 ```yml
 docker:
@@ -31,15 +30,15 @@ docker:
       password: "registrypassword"
 ```
 
-## Custom Network Interfaces
+## 自定義網路模式
 
-You can change the network interface that Wings uses for all containers by editing the network name; it is by default set to `pterodactyl_nw`. For example, to enable Docker host mode change the network name to `host`.
+您可以透過編輯網路模式來更改 Wings 所用 Docker 的網路模式;這通常預設設定為 `pterodactyl_nw`,例如,如果要啟用 Docker 的主機模式請將網路模式更改為 `host`.
 
 ::: warning
-Changing network mode to `host` grants Pterodactyl direct access to all machine interfaces and Panel users can bind to any IP or Port even if it's not allocated to their container. You will lose all benefits of Docker network isolation. It is not recommended for public installations that are hosting other users' servers.
+更改網路模式為 `host` 將允許面板直接訪問所有主機,面板使用者可以繫結到任意的IP或埠(即使沒有分配給使用者伺服器)您將會失去 Docker 網路隔離的保護,所以我們不建議您用於公共 IDC 出租時使用
 :::
 
-### Example of usage
+### 使用示例
 
 ```yml
 docker:
@@ -48,24 +47,24 @@ docker:
     network_mode: host
 ```
 
-After making changes, the following commands will stop the Wings, remove the Pterodactyl network, and start the Wings again. Run at your own risk.
+再更改後需要重新啟動 Wings (可執行以下命令),您需要注意的是所有風險將由您自己承擔!
 `systemctl stop wings && docker network rm pterodactyl_nw && systemctl start wings`
 
-## Enabling Cloudflare proxy
+## 使用 Cloudflare 代理
 
-Cloudflare proxying of the Wings isn't beneficial since users will be connecting to the machine directly and bypassing any Cloudflare protection. As such, your Node machine IP will still be exposed.
+使用 Cloudflare 代理 Wings 並沒有什麼用,因為使用者依舊會直連主機，而中間的 Cloudflare 並沒有起什麼作用,所以您的伺服器 IP 仍會被公開
 
-To enable Cloudflare proxy, you must change the Wings port to one of the Cloudflare HTTPS ports with caching enabled (more info [here](https://developers.cloudflare.com/fundamentals/get-started/reference/network-ports/)), such as 8443, because Cloudflare only supports HTTP on port 8080. Select your Node in the Admin Panel, and on the settings tab, change the port. Make sure that you set "Not Behind Proxy" when using Full SSL settings in Cloudflare. Then on Cloudflare dashboard, your FQDN must have an orange cloud enabled beside it.
+如果需要啟動 Cloudflare 代理您必須將 Wings 埠更改為啟用快取的 Cloudflare 的 HTTPS 埠 `8443`(更多資訊 [訪問這裡](https://developers.cloudflare.com/fundamentals/get-started/reference/network-ports/)),因為 Cloudflare 只支援 8080 埠的 HTTP 協議,您可以在管理頁面那裡進行更改此埠，在 Cloudflare 中使用 完全SSL 時，請確保設定為 "未使用CDN"，然後到 Cloudflare DNS記錄設定頁將您 FQDN 旁邊的橙色雲啟用。
 
-You are unable to proxy the SFTP port through Cloudflare unless you have their enterprise plan.
+有個問題在於,如果你不購買 Cloudflare 的 `企業` 套餐,那麼就不能代理 SFTP 埠
 
-## Container PID Limit
+## 容器 PID 限制
 
-You can change the total number of processes that can be active in a container at any given moment by changing the `container_pid_limit` value. The default value is `512`.
-You can set it to `0` to disable the limit completely. However, this is _not_ recommended as the limit prevents malicious overloading of the node.
-Restart wings and your game server to apply the new limit.
+您可以透過更改 `container_pid_limit` 值來更改在任何給定時刻可在容器中執行的程序總數。預設值為`512`。
+您可以將其設定為 `0` 以完全禁用限制。但是！不推薦這樣做，因為該限制可以防止節點的惡意過載。
+重新啟動 wings 和你的遊戲伺服器以應用新的限制。
 
-### Example of usage
+### 使用示例
 
 ```yml
 docker:
@@ -74,22 +73,22 @@ docker:
   ...
 ```
 
-## Throttles Limits
+## 流量限制
 
-You can use these settings to adjust or completely disable throttling.
+您可以使用以下設定來設定流量限制
 
-| Setting Key           | Default Value | Notes                                                                                                                               |
+| 設定內容        | 預設值 | 備註                                                                                                                         |
 | :-------------------- | :-----------: | ----------------------------------------------------------------------------------------------------------------------------------- |
-| enabled               |     true      | Whether or not the throttler is enabled                                                                                             |
-| lines                 |     2000      | Total lines that can be output in a given line_reset_interval period                                                                |
-| maximum_trigger_count |       5       | Amount of times throttle limit can be triggered before the server will be stopped                                                   |
-| line_reset_interval   |      100      | The amount of time after which the number of lines processed is reset to 0                                                          |
-| decay_interval        |     10000     | Time in milliseconds that must pass without triggering throttle limit before trigger count is decremented                           |
-| stop_grace_period     |      15       | Time that a server is allowed to be stopping for before it is terminated forcefully if it triggers output throttle                  |
-| write_limit           |       0       | Impose I/O write limit for backups to the disk, 0 = unlimited. Value greater than 0 throttles write speed to the set value in MiB/s |
-| download_limit        |       0       | Impose a Network I/O read limit for archives, 0 = unlimited. Value greater than 0 throttles read speed to the set value in MiB/s    |
+| enabled               |     true      | 是否啟用流量限制                                                                                   |
+| lines                 |     2000      | 給定時間內可輸出的總行數,達到上限將呼叫 line_reset_interval                                  |
+| maximum_trigger_count |       5       | 在伺服器停止之前可觸發限制的次數                                                   |
+| line_reset_interval   |      100      | 重置行數時間(可為0)                                                          |
+| decay_interval        |     10000     | 在不觸發限制的情況下等待的時間                           |
+| stop_grace_period     |      15       | 如果伺服器觸發限制,則伺服器在強制終止前可以停止的時間                  |
+| write_limit           |       0       | 對磁碟 I/O 的限制,設定0為無限,單位為 MiB/s |
+| download_limit        |       0       | 設定網路 I/O 限制,設定0為無限,單位為 MiB/s    |
 
-### Example of usage
+### 使用示例
 
 ```yml
 throttles:
@@ -101,16 +100,16 @@ throttles:
   stop_grace_period: 15
 ```
 
-## Installer Limits
+## 安裝限制
 
-Defines the limits on the installer containers that prevents a server's installation process from unintentionally consuming more resources than expected. This is used in conjunction with the server's defined limits. Whichever value is higher will take precedence in the install containers.
+設定安裝程式容器限制可以幫助伺服器安裝時無意義的消耗資源,可以和伺服器定義的限制一起使用,但在安裝例項時會議最高值為基準
 
-| Setting Key | Default Value | Notes                                                                                                       |
+| 設定項 | 預設值 | 備註                                                                                                       |
 | :---------- | :-----------: | ----------------------------------------------------------------------------------------------------------- |
-| memory      |     1024      | The maximum amount of memory install container can use unless server memory limit is higher than this value |
-| cpu         |      100      | The maximum amount of cpu install container can use unless server cpu limit is higher than this value       |
+| memory      |     1024      | 安裝容器時可以使用的最大記憶體 |
+| cpu         |      100      | 安裝容器時可以使用的最大 CPU 使用率      |
 
-### Example of usage
+### 使用示例
 
 ```yml
 installer_limits:
@@ -118,16 +117,16 @@ installer_limits:
   cpu: 100
 ```
 
-## Other values
+## 其他內容
 
-More commonly discussed values. View all Wings config values and explanations in [these two files.](https://github.com/pterodactyl/wings/tree/develop/config)
+還有更多可以配置 Wings 的選項和說明 [您可點我檢視](https://github.com/pterodactyl-taiwan/wings/tree/develop/config)
 
-| Setting Key                | Default Value | Notes                                                                                                                                                      |
-| -------------------------- | :-----------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| debug                      |     false     | Force Wings to run in debug mode                                                                                                                           |
-| tmpfs_size                 |      100      | The size of the /tmp directory in MB when mounted into a container                                                                                         |
-| websocket_log_count        |      150      | The number of lines to display in the console                                                                                                              |
-| detect_clean_exit_as_crash |     true      | Mark server as crashed if it's stopped without user interaction, e.g., not pressing stop button                                                            |
-| (crash detection) timeout  |      60       | Timeout between server crashes that will not cause the server to be automatically restarted                                                                |
-| app_name                   | "Pterodactyl" | Changes the name of the daemon, shown in the panel's game console                                                                                          |
-| check_permissions_on_boot  |     true      | Check all file permissions on each boot. Disable this when you have a very large amount of files and the server startup is hanging on checking permissions |
+| 設定項                | 預設值 | 備註                                                                                           |
+| -------------------------- | :-----------: | ----------------------------------------------------------------------------------------------- |
+| debug                      |     false     | 強制 Wings 在 Debug 模式執行                                                                |
+| tmpfs_size                 |      100      | 掛載例項到 `/tmp` 目錄的大小限制                              |
+| websocket_log_count        |      150      | 在控制檯中顯示的行數                                                   |
+| detect_clean_exit_as_crash |     true      | 如果伺服器沒有在互動的情況下意外停止將會標記為已崩潰 |
+| (crash detection) timeout  |      60       | 伺服器崩潰自動重啟持續時間     |
+| app_name                   | "Pterodactyl" | 更改Wings的名稱,該項將會顯示在面板的控制檯中                               |
+| check_permissions_on_boot  |     true      | 每次啟動時將會檢查所有檔案的許可權,如果您的伺服器檔案過多請禁用!|

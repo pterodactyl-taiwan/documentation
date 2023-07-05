@@ -1,20 +1,18 @@
-# Troubleshooting
+# 疑難解答
 
 [[toc]]
 
-## Reading Error Logs
-If you ever encounter an unexpected error with the Panel the first thing you will likely be asked for is the logs.
-To retrieve these, simply execute the command below which will output the last 100 lines of the Panel's log file.
+## 閱讀錯誤日誌
+如果您在面板中遇到意外錯誤，你要做的第一件事就是提取日誌。
+如果你要檢視這些日誌，只需執行下面的命令，該命令將輸出面板日誌檔案的最後 100 行內容。
 
 ``` bash
+# 請注意你的面板位置
 tail -n 100 /var/www/pterodactyl/storage/logs/laravel-$(date +%F).log
 ```
 
-### Parsing the Error
-When you run the command above, you'll probably be hit with a huge wall of text that might scare you. Fear not,
-this is simply a stacktrace leading to the cause of the error, and you can actually ignore almost all of it when
-looking for the cause of the error. Lets take a look at some example output below, which has been truncated to
-make this easier to follow with.
+### 分析錯誤內容
+當你執行上面的命令時，你可能會被一大堵資訊嚇到，其實你不用害怕它，這只是一個導致錯誤原因的堆疊跟蹤，在尋找錯誤原因時，您實際上可以忽略幾乎所有內容。讓我們看一下下面的一些示例輸出，它已被截斷以使其更易於理解。
 
 ```
 #70 /srv/www/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(116): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
@@ -30,100 +28,76 @@ Stack trace:
 #5 /srv/www/vendor/laravel/framework/src/Illuminate/View/View.php(125): Illuminate\View\View->getContents()
 ```
 
-The first thing you'll want to do is follow the chain of numbers _up_ until you find `#0`, this will be the function that
-triggered the exception. Right above line 0 you will see a line that has the date and time in brackets, `[2018-07-19 00:50:24]`
-above for example. This line will be the human readable exception that you can use to understand what went wrong.
+您要做的第一件事就是沿著數字鏈向上直到找到 `#0`，這是觸發異常的函式。在第 0 行的正上方，您會看到一行括號中包含日期和時間，例如上面的 `[2018-07-19 00:50:24]`。這一行將是人類讀的異常資訊，您可以根據時間線來了解它為什麼出現了問題。
 
-### Understanding the Error
-In the example above we can see that the actual error was:
+### 理解錯誤
+在上面的示例中，我們可以看到實際的錯誤是：
 
 ```
 local.ERROR: ErrorException: file_put_contents(...): failed to open stream: Permission denied in /srv/www/vendor/laravel/framework/src/Illuminate/Filesystem/Filesystem.php:122
 ```
 
-From this error we can determine that there was an error performing a [file_put_contents()](http://php.net/manual/en/function.file-put-contents.php) call, and the error was
-that we couldn't open the file because permissions were denied. Its okay if you don't understand the error at all, but
-it does help you get faster support if you're able to provide these logs, and at least find the source of the error.
-Sometimes the errors are pretty straightforward and will tell you exactly what went wrong, such as a `ConnectionException`
-being thrown when the Panel can't connect to the Daemon.
+從這個錯誤中我們可以確定執行 [file_put_contents()](http://php.net/manual/en/function.file-put-contents.php) 呼叫時出錯，錯誤是我們不開啟檔案，因為許可權被拒絕了。如果您根本不瞭解這些錯誤也沒關係，但如果您能夠提供這些日誌，它確實可以幫助您更快獲得翼龍官方的幫助，因為這些至少能找到錯誤的根源。
+有時錯誤非常簡單，它會告訴您究竟出了什麼問題，例如當面板無法連線到守護程式時會引發 `ConnectionException`。
 
-### Utilizing GREP
-If you're trying to go through a bunch of errors quickly, you can use the command below which will limit the results returned to only
-be the actual error lines, without all of the stack traces.
+### 利用GREP
+如果你想快速解決一堆錯誤，你可以使用下面的命令將返回的結果限制為僅實際錯誤的一行，而不是所有的堆疊跟蹤。
 
 ``` bash
 tail -n 1000 /var/www/pterodactyl/storage/logs/laravel-$(date +%F).log | grep "\[$(date +%Y)"
 ```
 
-## Cannot Connect to Server Errors
-### Basic Debugging Steps
-* Check that Wings is running, and not reporting errors. Use `systemctl status wings` to check the current status of
-  the process.
-* Check your browser's console by pressing `Ctrl + Shift + J` (in Chrome) or `Cmd + Alt + I` (in Safari). If there is
-a red error in it, chances are that it will narrow down the potential problem.
-* Make sure Wings is properly installed and the active configuration matches the configuration shown under
-`Admin -> Node -> Configuration` in the Panel.
-* Check that the Wings ports are open on your firewall. Wings uses ports `8080` or `8443` for HTTP(s) traffic,
-and `2022` for SFTP traffic.
-* Ensure you have AdBlock disabled or whitelisted for your Panel and Wings domains.
-* Check that the Panel can reach Wings using the domain that is configured on the Panel. Run `curl
-https://domain.com:8080` on the Panel server and ensure that it can successfully connect to Wings.
-* Ensure that you are using the correct HTTP scheme for your Panel and Wings. If the Panel is running over HTTPS
-  Wings will also need to be running on HTTPS.
+## 無法連線到伺服器的錯誤資訊
+### 基本的除錯步驟
+* 檢查 Wings 是否正在執行，且沒有報錯。使用 `systemctl status wings` 來檢查程序的當前狀態。
+* 按 `Ctrl + Shift + J`（在 Chrome 中）或 `Cmd + Alt + I`（在 Safari 中）檢查瀏覽器的控制檯。如果其中有一個紅色錯誤，它可能會縮小潛在問題的範圍。
+* 確保 Wings 已正確安裝，並且節點裡的與面板中 `高階管理 -> 節點 -> 配置` 下顯示的配置相匹配。
+* 檢查 Wings 埠是否在防火牆上開啟。Wings 的 HTTP(s) 使用的埠是 `8080` 或 `8443`，對與 SFTP 使用的是 `2022` 埠。(當然這些事預設的，如果你改了的話就不是這些了)
+* 確保您已為面板和 Wings 使用的域名禁用了黑名單或加入了白名單。
+* 檢查面板是否可以使用面板上配置的域名訪問到 Wings。在面板所在的伺服器上執行 `curl https://domain.com:8080` 來確保它可以成功連線到 Wings 。
+* 確保您為面板和 Wings 使用正確的 HTTP 模式。如果面板在 HTTPS 上執行，Wings 也需要在 HTTPS 上執行。
 
-### More Advanced Debugging Steps
-* Stop Wings and run `wings --debug` to see if there are any errors being output. If so, try resolving them manually,
-  or reach out on [Discord](https://discord.gg/pterodactyl) for more assistance.
-* Check your DNS and ensure that the response you receive is the one you expect using a tool such as `nslookup` or `dig`.
-* If you use CloudFlare make sure that the orange cloud is disabled for your Wings or Panel `A` records.
-* Make sure when using Wings behind a firewall — pfSense, OpenSwitch, etc. — that the correct NAT settings to access
-the Wing's ports from the outside network are setup.
-* If nothing is working so far, check your own DNS settings and consider switching DNS servers.
-* When running the Panel and Wings on one server it can sometimes help if to add an entry in `/etc/hosts` that directs
-the public IP back to the server. Sometimes the reverse path is also needed, so you may need to add an entry to your
-servers `/etc/hosts` file that points the Panel's domain to the correct IP.
-* When running Wings and the Panel on separate VM's using the same adapter make sure the VM's can connect to each
-other. Promiscuous mode might be needed.
+### 更多的高階除錯步驟
+* 停止 Wings 並執行 `wings --debug` 來檢視是否輸出一些錯誤資訊。如果有是需要人工去解決它們的，或透過 [Discord](https://discord.gg/pterodactyl) 聯絡翼龍官方以獲得更多幫助(需要用英文去交流)。
+* 使用諸如 `nslookup` 或 `dig` 之類的工具來檢查您的 DNS 是否響應你所期望的內容。
+* 如果您使用 CloudFlare，請確保為您的 Wings 或面板的 `A` 記錄禁用代理。
+* 在有防火牆的時候使用 Wings（pfSense、OpenSwitch 等）時，請確保設定了正確的 NAT 設定，以便從外部網路能夠訪問 Wing 的埠。
+* 如果按照上面說的排查過了話沒有任何效果，請檢查您自己的 DNS 設定並考慮切換 DNS 伺服器，至於怎麼切換請自行在網路上查閱。
+* 當在一臺伺服器上同時執行面板和 Wings 時，如果在 `/etc/hosts` 中新增一個將公共 IP 引導回伺服器的條目，有時會有所幫助。有時也需要反向路徑，因此您可能需要在伺服器的 `/etc/hosts` 檔案中新增一個條目，將面板的域名指向正確的 IP。
+* 在使用相同介面卡的不同 VM(虛擬機器) 上執行 Wings 和麵板時，請確保 VM(虛擬機器) 可以相互連線。可能需要混雜模式。
 
-## Invalid MAC Exception
+## 無效的 MAC 異常
 ::: warning
-This error should never happen if you correctly follow our installation and upgrade guides. The only time we have
-ever seen this error occur is when you blindly restore the Panel database from a backup and try to use a fresh
-installation of the Panel.
+如果您正確遵循我們的安裝和升級指南，則永遠不會發生此錯誤。我們唯一一次看到此錯誤發生是當您盲目地從備份中恢復面板資料庫並嘗試使用全新安裝的面板的時候。
 
-When restoring backups you should _always_ restore the `.env` file!
+恢復備份時，您應該_一起_恢復 `.env` 檔案！裡面包含了非常重要的加密金鑰！！
 :::
 
-Sometimes when using the Panel you'll unexpectedly encounter a broken page, and upon checking the logs you'll see
-an exception mentioning an invalid MAC when decrypting. This error is caused by mismatched `APP_KEY`s in your `.env` file
-when the data was encrypted versus decrypted.
+有時在使用面板時，您會意外地遇到一個損壞的頁面，並且在檢查日誌時，您會看到一個異常，也就是在解密時會提到了一個無效的 MAC。此錯誤是由 `.env` 檔案中的 `APP_KEY` 不匹配引起的。
 
-If you are seeing this error the only solution is to restore the `APP_KEY` from your `.env` file. If you have lost that
-original key there is no way to recover the lost data.
+如果您看到此錯誤，唯一的解決方案是從您的 `.env` 檔案中恢復 `APP_KEY` 環境變數。如果您丟失了原始金鑰，則無法恢復丟失的資料，也就是說你再也找不到原始資料了，從頭再來吧。
 
-## SELinux Issues
-On systems with SELinux installed you might encounter unexpected errors when running redis or attempting to connect
-to the daemon to perform actions. These issues can generally be resolved by executing the commands below to allow
-these programs to work with SELinux.
+## SELinux 的問題
+在安裝了 SELinux 的系統上，執行 redis 或嘗試連線到守護程式以執行操作時，您可能會遇到意外錯誤。這些問題通常可以透過執行以下命令來解決，以允許這些程式與 SELinux 一起工作。
  
-### Redis Permissions Errors
+### Redis 的許可權錯誤
 ``` bash
 audit2allow -a -M redis_t
 semodule -i redis_t.pp
 ```
 
-### Wings Connection Errors
+### Wings 的連線錯誤
 ``` bash
 audit2allow -a -M http_port_t
 semodule -i http_port_t.pp
 ```
 
-## FirewallD issues
-If you are on a RHEL/CentOS server with `firewalld` installed you may have broken DNS.
+## 防火牆的問題
+如果您在 RHEL/CentOS 伺服器上安裝了 `firewalld`，這可能已經破壞了原有的 DNS 規則。
 
 ```
 firewall-cmd --permanent --zone=trusted --change-interface=pterodactyl0
 firewall-cmd --reload
 ```
 
-Restart `docker` and `wings` after running these to be sure the rules are applied.
+上述命令執行後重新啟動 `docker` 和 `wings` 以確保這些規則被系統應用。
